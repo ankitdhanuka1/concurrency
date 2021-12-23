@@ -1,0 +1,38 @@
+4.1.6 Finite buffer producer-consumer solution
+Here is a solution.
+
+mutex = Semaphore (1)
+items = Semaphore (0)
+spaces = Semaphore (buffer.size())
+
+
+Finite buffer consumer solution
+
+items.wait ()  // wait till item is produced
+
+mutex.wait ()  // wait on mutex to excess buffer
+event = buffer.get ()
+mutex.signal ()  // signal mutex for buffer
+
+spaces.signal ()  // signal space is available
+
+event.process ()  //process the event
+
+
+
+The producer code is symmetric, in a way:
+Finite buffer producer solution
+
+event = waitForEvent ()  // All threads wait for event to come
+
+spaces.wait ()    // first check if space is available
+mutex.wait ()     // wait on mutex to get excess of buffer
+buffer.add(event); 
+mutex.signal ()   // signal mutex for buffer
+
+items.signal ()    // signal items are available
+
+
+
+In order to avoid deadlock, producers and consumers check availability before getting the mutex. For best performance, they release the mutex before
+signaling
